@@ -5,6 +5,7 @@ from typing import Tuple, List, Dict, Union, Optional
 from itertools import product
 import json
 import numpy as np
+import h5py
 
 # 
 # io
@@ -74,6 +75,134 @@ def load_dict_from_json(filepath):
         return obj
     
     return recursive_convert(dictionary)
+
+def save_dict_to_hdf5(dictionary, filepath):
+    """
+    Save a dictionary containing numpy arrays and other data types to an HDF5 file.
+
+    Args:
+        dictionary (dict): Dictionary that may contain numpy arrays, scalars, strings, etc.
+        filepath (str): Path where HDF5 file will be saved
+    """
+    def save_recursive(group, data):
+        for key, value in data.items():
+            if isinstance(value, dict):
+                # Create a subgroup for nested dictionaries
+                subgroup = group.create_group(key)
+                save_recursive(subgroup, value)
+            elif isinstance(value, np.ndarray):
+                # Save numpy arrays directly
+                group.create_dataset(key, data=value)
+            elif isinstance(value, (list, tuple)):
+                # Convert lists/tuples to numpy arrays
+                try:
+                    array_value = np.array(value)
+                    group.create_dataset(key, data=array_value)
+                    # Store original type as attribute
+                    group[key].attrs['original_type'] = type(value).__name__
+                except:
+                    # If conversion fails, store as string
+                    group.create_dataset(key, data=str(value))
+                    group[key].attrs['original_type'] = 'string_from_' + type(value).__name__
+            elif isinstance(value, str):
+                # Store strings
+                group.create_dataset(key, data=value)
+            elif isinstance(value, (int, float, bool, np.integer, np.floating, np.bool_)):
+                # Store scalars
+                group.create_dataset(key, data=value)
+            elif value is None:
+                # Handle None values
+                group.create_dataset(key, data='__NONE__')
+                group[key].attrs['is_none'] = True
+            else:
+                # For other types, convert to string
+                group.create_dataset(key, data=str(value))
+                group[key].attrs['original_type'] = type(value).__name__
+
+    with h5py.File(filepath, 'w') as f:
+        save_recursive(f, dictionary)
+
+def load_dict_from_hdf5(filepath):
+    """
+    Load a dictionary from an HDF5 file.
+
+    Args:
+        filepath (str): Path to HDF5 file
+
+    Returns:
+        dict: Dictionary with data restored from HDF5
+    """
+    def load_recursive(group):
+        result = {}
+        for key in group.keys():
+            item = group[key]
+            if isinstance(item, h5py.Group):
+                # Recursively load subgroups
+                result[key] = load_recursive(item)
+            else:  # h5py.Dataset
+                # Handle None values
+                if item.attrs.get('is_none', False):
+                    result[key] = None
+                    continue
+
+                # Get the data
+                data = item[()]
+
+                # Handle string data (HDF5 stores strings as bytes sometimes)
+                if isinstance(data, bytes):
+                    data = data.decode('utf-8')
+                elif isinstance(data, np.bytes_):
+                    data = data.decode('utf-8')
+
+                # Check for original type attributes
+                original_type = item.attrs.get('original_type', None)
+                if original_type == 'list':
+                    result[key] = data.tolist()
+                elif original_type == 'tuple':
+                    result[key] = tuple(data.tolist()) if hasattr(data, 'tolist') else tuple(data)
+                elif original_type and original_type.startswith('string_from_'):
+                    result[key] = str(data)
+                else:
+                    # For numpy arrays and scalars, keep as-is
+                    result[key] = data
+
+        return result
+
+    with h5py.File(filepath, 'r') as f:
+        return load_recursive(f)
+
+def inspect_hdf5_structure(filepath, max_depth=None):
+    """
+    Print the structure of an HDF5 file for inspection.
+
+    Args:
+        filepath (str): Path to HDF5 file
+        max_depth (int, optional): Maximum depth to print (None for unlimited)
+    """
+    def print_structure(group, indent=0, current_depth=0):
+        if max_depth is not None and current_depth > max_depth:
+            return
+
+        for key in group.keys():
+            item = group[key]
+            print('  ' * indent + f'├── {key}', end='')
+
+            if isinstance(item, h5py.Group):
+                print(' (group)')
+                print_structure(item, indent + 1, current_depth + 1)
+            else:  # h5py.Dataset
+                shape_str = f'{item.shape}' if item.shape != () else 'scalar'
+                dtype_str = str(item.dtype)
+                print(f' (dataset): {shape_str}, {dtype_str}')
+
+                # Print attributes if any
+                if item.attrs:
+                    for attr_name, attr_value in item.attrs.items():
+                        print('  ' * (indent + 1) + f'└── @{attr_name}: {attr_value}')
+
+    print(f'Structure of {filepath}:')
+    with h5py.File(filepath, 'r') as f:
+        print_structure(f)
 
 # 
 # tools for integration 

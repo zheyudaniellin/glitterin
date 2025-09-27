@@ -26,22 +26,4 @@ dependencies = [
 "Source" = "https://github.com/zheyudaniellin/glitterin"
 "Documentation" = "https://github.com/zheyudaniellin/glitterin#readme"
 
-# Package discovery and data inclusion
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["glitterin*"]
-
-[tool.setuptools.package-data]
-glitterin = ["../assets/nnmodels/**/*"]
-
-# Alternative way to include data files
-[tool.setuptools.packages]
-glitterin = "glitterin"
-
-[tool.setuptools.package-dir]
-glitterin = "glitterin"
-
-# Include all files in assets directory
-[tool.setuptools.data-files]
-"glitterin/assets" = ["assets/**/*"]
 

@@ -1,4 +1,4 @@
-# glitterin - dust Grain LIght scaTTering Neural network 
+# glitterin - dust Grain LIght scaTTERing Neural network 
 
 A python package interface to using neural networks trained on scattering of irregular grains.
 
@@ -25,4 +25,4 @@ user.py
 
 ## Installation
 ```bash
-pip install newcode
+pip install glitterin
