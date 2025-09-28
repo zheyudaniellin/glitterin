@@ -1,10 +1,10 @@
-# glitterin - dust Grain LIght scaTTERing Neural network 
+# glitterin - dust Grain LIght scaTTERIng Neural network 
 
 A python package interface to using neural networks trained on scattering of irregular grains.
 
 This package was created by 
 
-# Credit
+## Credit
 
 If you use this package, please cite Lin et al., in prep. and Yurkin M.A. & Hoekstra A.G, "The discrete-dipole-approximation code ADDA: capabilities and known limitations," JQSRT, 112, 2234–2247 (2011). 
 
