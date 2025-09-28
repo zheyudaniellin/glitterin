@@ -1,12 +1,9 @@
 """
 """
-import pdb
 import os
 import copy
 import numpy as np
 import h5py
-import matplotlib.pyplot as plt
-from scipy import stats
 rad = np.pi / 180
 
 def make_property(calc_func, private_attr):
@@ -110,7 +107,7 @@ class MuellerMatrix(object):
         self.matrix_index = ['Z11', 'Z12', 'Z22', 'Z33', 'Z34', 'Z44']
 
         # delete any attribute
-        for ikey in ["Z{:d}{:d}".format(i,j) for i in [1,2,3,4] for j in [1,2,3,4]]: 
+        for ikey in ['Z{:d}{:d}'.format(i,j) for i in [1,2,3,4] for j in [1,2,3,4]]: 
             if ikey not in self.matrix_index:
                 try:
                     delattr(self, ikey)
@@ -129,7 +126,7 @@ class MuellerMatrix(object):
         -> Csca = 2 * pi int_{-1}^{1} Z11 d cos(theta)
         """
         if self.Z11.shape[0] != len(self.ang):
-            raise ValueError(f"Length of ang ({len(self.ang)}) must math the first dimension of Z11 ({self.Z11.shape[0]})")
+            raise ValueError(f'Length of ang ({len(self.ang)}) must math the first dimension of Z11 ({self.Z11.shape[0]})')
 
         # I will integrate using mu
         mu = np.cos(self.ang * rad)
@@ -489,7 +486,7 @@ class MuellerMatrixCollection(MuellerMatrix):
 
         # set the axis
         setattr(self, name, axis)
-        self.axis_name = ["ang", name]
+        self.axis_name = ['ang', name]
 #        self.naxis = 2
 
         # initialize the attributes
@@ -582,8 +579,7 @@ class MuellerMatrixCollection(MuellerMatrix):
 
         # set the axis
         setattr(self, name, axis)
-        self.axis_name = ["ang", name]
-#        self.naxis = 2
+        self.axis_name = ['ang', name]
 
         # initialize the attributes
         for inx, ikey in enumerate(self.matrix_index):
@@ -760,6 +756,8 @@ class MuellerMatrixCollection(MuellerMatrix):
         It's better to conduct a for loop
 
         """
+        from scipy import stats
+
         # create containers
         # err, low, high
         mkeys = ['err', 'low', 'high']
@@ -819,6 +817,8 @@ class MuellerMatrixCollection(MuellerMatrix):
         It's best to estimate those normalized quantities as part of bootstrapping.
         The outputs will no longer follow the typical outputs that the dust object can read
         """
+        from scipy import stats
+
         err = {'ang':self.ang}
 
         # cross-section
@@ -949,9 +949,9 @@ class MuellerMatrixCollection(MuellerMatrix):
         """
         we will write the results as a hdf5 file
         """
-        with h5py.File(fname, "w") as hf:
+        with h5py.File(fname, 'w') as hf:
             # basic properties
-            for ikey in ["Cabs", "Cext"]:
+            for ikey in ['Cabs', 'Cext']:
                 hf.create_dataset(ikey, data=getattr(self, ikey))
 
             # Z matrix
@@ -959,7 +959,7 @@ class MuellerMatrixCollection(MuellerMatrix):
                 hf.create_dataset(ikey, data=getattr(self, ikey))
 
             # axis
-            hf.create_dataset("axis_name", data=self.axis_name)
+            hf.create_dataset('axis_name', data=self.axis_name)
 
             for ikey in self.axis_name:
                 hf.create_dataset(ikey, data=getattr(self, ikey))
@@ -968,8 +968,8 @@ class MuellerMatrixCollection(MuellerMatrix):
         """
         read an hd5f file
         """
-        with h5py.File(fname, "r") as hf:
-            for ikey in ["Cabs", "Cext"]:
+        with h5py.File(fname, 'r') as hf:
+            for ikey in ['Cabs', 'Cext']:
                 setattr(self, ikey, np.array(hf[ikey]))
 
             for ikey in self.matrix_index:

@@ -85,27 +85,22 @@ def form_y(phy, err=None, quant='Qext'):
             dy = err / phy
             return (y, dy)
 
-    elif quant in ['alb', 'ems']:
+    elif quant in ['ems']:
         # linear transformation
-        y = phy * 1
         if err is None:
-            return y
+            return phy
         else:
-            dy = err * 1
-            return (y, dy)
+            return (phy, err)
 
     elif quant in ['N12', 'N22', 'N33', 'N34', 'N44']:
         # I'll hard code it here
         # make sure it's consistent with ScatteringNetwork
 
         # linear case
-        y = phy * 1
-
         if err is None:
-            return y
+            return phy
         else:
-            dy = err * 1
-            return (y, dy)
+            return (phy, err)
 
     else:
         raise ValueError('quant unknown: {}'.format(quant))
@@ -123,7 +118,7 @@ def unform_y(y, dy=None, quant='Qext'):
             err = phy * dy
             return (phy, err)
 
-    elif quant in ['alb', 'ems']:
+    elif quant in ['ems']:
         # linear case
         if dy is None:
             return y 
@@ -144,9 +139,11 @@ def unform_y(y, dy=None, quant='Qext'):
 # 
 # neural network
 # 
-
 def count_free_parameters(input_dim, hidden_dim, output_dim):
     """
+    input_dim : int
+    hidden_dim : list of int
+    output_dim : int
     """
     # consider the weights
     n_wgt = input_dim * hidden_dim[0]
@@ -174,7 +171,7 @@ class ScatteringNetwork(nn.Module):
         super().__init__()
 
         self.quant = quant
-        if quant in ['Qext', 'Qabs', 'alb', 'ems']:
+        if quant in ['Qext', 'Qabs', 'ems']:
             input_size = 3
         elif quant in ['N11', 'N12', 'N22', 'N33', 'N34', 'N44']:
             input_size = 4
@@ -203,19 +200,6 @@ class ScatteringNetwork(nn.Module):
                 ])
 
                 prev_dim = h
-        """
-        # we want a dropout layers
-        layers = []
-        prev_dim = input_size
-        for h in hidden_dims:
-            layers.extend([
-                nn.Linear(prev_dim, h),
-                nn.GELU(),
-                nn.Dropout(dropout_rate)
-            ])
-
-            prev_dim = h
-        """
 
         # output layer
         output_size = 1
@@ -237,7 +221,7 @@ class ScatteringNetwork(nn.Module):
         if self.quant in ['N12', 'N22', 'N33', 'N34', 'N44']:
             # these will have a tanh constraint
             return torch.tanh(self.layers(x)[:,0])
-        elif self.quant in ['alb', 'ems']:
+        elif self.quant in ['ems']:
             # make sure this is consistent with your form_y, unform_y
             # apply a sigmoid constraint
             return torch.sigmoid(self.layers(x)[:,0])
@@ -276,7 +260,7 @@ class ScatteringPredictor:
         return model
 
     def n_free_parameters(self):
-        if self.quant in ['Qext', 'Qabs', 'alb', 'ems']:
+        if self.quant in ['Qext', 'Qabs', 'ems']:
             input_size = 3
         elif self.quant in ['N11', 'N12', 'N22', 'N33', 'N34', 'N44']:
             input_size = 4

@@ -4,20 +4,18 @@ this will be the main interface for the user
 For the convenience of the, user, I will always use xvol instead of xenc
 """
 import os
-import time
-from copy import deepcopy
 from typing import Tuple, List, Dict, Union, Optional
-import pdb
-import pickle
-import json
 import numpy as np
-import matplotlib.pyplot as plt
 
 from . import dust, network
 
 # This is the geometric shadow as a fraction of the shadow of the enclosing sphere. I calculated this using shape/prob_geom.py
-ADP_PROJAREA_FRACTION = 0.6995
-ADP_FILLING_FACTOR = 0.2904
+#ADP_PROJAREA_FRACTION = 0.6995
+#ADP_FILLING_FACTOR = 0.2904
+
+# These are the values from Zubko+2024
+ADP_PROJAREA_FRACTION = 0.610
+ADP_FILLING_FACTOR = 0.236
 
 #
 # convenient physical constants
@@ -233,8 +231,7 @@ def average_over_size_matrix(mat, n_r_w, r_w):
 
     Note that I'm averaging over the cross-section
     """
-    avg = dust.MuellerMatrixTable()
-    avg.matrix_index = mat.matrix_index
+    avg = dust.MuellerMatrixTable(matrix_index=mat.matrix_index)
     avg.ang = mat.ang
 
 
@@ -397,142 +394,6 @@ def extrapolate_small_a(xvol, re_m, im_m, theta, w, producer, matrix_index):
 
     return out
 
-class old_ScatteringProducer(BasicProducer):
-    """
-    THIS IS AN OUTDATED CLASS
-    This will organize multiple TrainedModelProducer and convert to actual cross-section units
-
-    This producer will consider all the scattering properties and does not have the option to pick quantities
-
-    Eventually, if we do some sort of ensemble modeling, then it should be able to handle the ensemble producer too
-    """
-    def __init__(self, model_files):
-        """
-        model_files : list of str
-            Each element should be the name of the model (the folder with model.pt and header.json)
-            If an element is a list of str, then this will interpret that as an ensemble
-        """
-        super().__init__()
-
-        # load all the models
-        self.quant = []
-        self.producer = []
-        for ifile in model_files:
-            # different producer depending on the element
-            if type(ifile) == str:
-                model = TrainedModelProducer(ifile)
-            else:
-                raise ValueError('input type unknown: {}'.format(ifile))
-
-            # check if this quantity was created already
-            if model.quant in self.quant:
-                raise ValueError('duplicate quant')
-
-            self.quant.append(model.quant)
-            self.producer.append(model)
-
-    def __call__(self, x, re_m, im_m, theta, w, outtype='dict', xtype='enc'):
-        """
-        This will produce the matrix in actual cross-sectional units if we know the wavelength. 
-        Parameters
-        ----------
-        w : float, ndarray
-            This should be a parameter that can multiply with xenc
-            This better be in cm so that the cross-section will be in cm^2
-        xenc
-        re_m, im_m : 1d ndarray 
-            These should be 1d arrays that match each other
-        theta : 1d ndarray
-            This is its own 1d array
-        
-        xtype : str
-            'enc' = enclosed sphere
-            'vol' = volume equivalent
-            'pja' = projected area equivalent
-        """
-        out = {}
-
-        # grain size
-        # I need the xenc because that's how the training data was normalized
-        if xtype == 'enc':
-            xenc = x
-        elif xtype == 'vol':
-            xenc = self.xenc_from_xvol(x)
-        elif xtype == 'pja':
-            xenc = self.xenc_from_xpja(x)
-        else:
-            raise ValueError('xtype unknown: {}'.format(xtype))
-
-        asize = w / 2 / np.pi * xenc
-        geom = np.pi * asize**2
-
-        # angular independent quantities
-        X = network.form_X(xenc, re_m, im_m)
-        val = []
-        for quant in ['Qext', 'ems']:
-            idx = self.quant.index(quant)
-            y = self.producer[idx].predictor.predict(X)
-            val.append(network.unform_y(y, quant=quant))
-
-        out['Cext'] = val[0] * geom
-        out['Cabs'] = val[1] * out['Cext']
-
-        # angular dependent quantities
-        X = network.form_X_txnk(theta, xenc, re_m, im_m, groups=[0,1,1,1])
-        val = []
-        for quant in ['N11', 'N12', 'N22', 'N33', 'N34', 'N44']:
-            idx = self.quant.index(quant)
-            y = self.producer[idx].predictor.predict(X)
-            ival = network.unform_y(y, quant=quant)
-            val.append(ival.reshape(len(theta), len(xenc)))
-
-        out['Z11'] = val[0] * (out['Cext'] - out['Cabs'])[None,:] / 2 / np.pi
-        out['Z12'] = - val[1] * out['Z11']
-
-        for i, quant in zip([2,3,4,5], ['N22', 'N33', 'N34', 'N44']):
-            newkey = 'Z' + quant.lstrip('N')
-            out[newkey] = val[i] * out['Z11']
-
-        #
-        # organize output
-        #
-        if outtype == 'dict':
-            return out
-
-        elif outtype == 'MuellerMatrix':
-            mat = dust.MuellerMatrixCollection()
-            mat.zeros2D('xenc', xenc, len(theta))
-            mat.assume_random_orientation()
-            mat.w = w
-            mat.ang = theta
-
-            mat.xenc = xenc
-
-            for ikey in out.keys():
-                setattr(mat, ikey, out[ikey])
-
-            return mat
-
-        else:
-            raise ValueError('outtype unknown')
-
-def load_producer(fdir, quant=None):
-    """
-    load the default models
-    """
-    raise ValueError('obsolete')
-
-    if quant is None:
-        quant = ['Qext', 'ems', 'N11', 'N12', 'N22', 'N33', 'N34', 'N44']
-
-    # names of the models
-    model_files = [os.path.join(fdir, 'assets', 'nnmodel', iquant) for iquant in quant]
-
-    # create the ScatteringProducer
-    producer = ScatteringProducer(model_files)
-
-    return producer
-
 class ComputationCache:
     """Helper class to cache intermediate calculations"""
     def __init__(self, base_outputs):
@@ -670,7 +531,7 @@ class ScatteringProducer(BasicProducer):
             if model_name not in self.loaded_models:
                 self.loaded_models[model_name] = self._load_model(model_name)
 
-    def __call__(self, x, re_m, im_m, theta, w, xtype='enc'):
+    def __call__(self, x, re_m, im_m, theta, w, xtype='enc', outtype='dict'):
         """
         This will produce the matrix in actual cross-sectional units if we know the wavelength. 
         Parameters
@@ -688,9 +549,11 @@ class ScatteringProducer(BasicProducer):
             'enc' = enclosed sphere
             'vol' = volume equivalent
             'pja' = projected area equivalent
-        """
-        out = {}
 
+        outtype : str
+            'dict' = output is a dictionary
+            'MuellerMatrix' = dust.MuellerMatrixCollection object
+        """
         # grain size
         # I need the xenc because that's how the training data was normalized
         if xtype == 'enc':
@@ -733,7 +596,22 @@ class ScatteringProducer(BasicProducer):
         for quantity in self.requested_quantities:
             results[quantity] = cache.get(quantity)
 
-        return results
+        # organize output type
+        if outtype == 'MuellerMatrix':
+            mat = dust.MuellerMatrixCollection()
+            mat.zeros2D('xenc', xenc, len(theta))
+            mat.assume_random_orientation()
+            mat.w = w
+            mat.ang = theta
+            mat.xenc = mat.xenc
+
+            for key in results.keys():
+                setattr(mat, key, results[key])
+
+            return mat
+
+        else:
+            return results
 
 #
 # bound checker

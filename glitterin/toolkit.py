@@ -50,7 +50,9 @@ def save_dict_to_json(dictionary, filepath, indent=4):
 def load_dict_from_json(filepath):
     """
     Load a dictionary from a JSON file, converting stored array data back to numpy arrays.
-    
+   
+    from Claude
+
     Args:
         filepath (str): Path to JSON file
         
@@ -79,6 +81,8 @@ def load_dict_from_json(filepath):
 def save_dict_to_hdf5(dictionary, filepath):
     """
     Save a dictionary containing numpy arrays and other data types to an HDF5 file.
+
+    from Claude
 
     Args:
         dictionary (dict): Dictionary that may contain numpy arrays, scalars, strings, etc.
@@ -125,6 +129,8 @@ def save_dict_to_hdf5(dictionary, filepath):
 def load_dict_from_hdf5(filepath):
     """
     Load a dictionary from an HDF5 file.
+
+    from Claude
 
     Args:
         filepath (str): Path to HDF5 file
@@ -226,12 +232,12 @@ def find_enclosing_indices(arr: np.ndarray, value: float) -> tuple[int, int]:
         ValueError: If the array is not monotonic
     """
     if len(arr) < 2:
-        raise ValueError("Array must have at least 2 elements")
+        raise ValueError('Array must have at least 2 elements')
 
     # Check if array is monotonic
     diffs = np.diff(arr)
     if not (np.all(diffs >= 0) or np.all(diffs <= 0)):
-        raise ValueError("Array must be monotonic (strictly increasing or decreasing)")
+        raise ValueError('Array must be monotonic (strictly increasing or decreasing)')
 
     # Determine if array is ascending or descending
     is_ascending = arr[0] <= arr[-1]
@@ -239,10 +245,10 @@ def find_enclosing_indices(arr: np.ndarray, value: float) -> tuple[int, int]:
     # Check if value is within range
     if is_ascending:
         if value < arr[0] or value > arr[-1]:
-            raise ValueError(f"Value {value} is outside the array range [{arr[0]}, {arr[-1]}]")
+            raise ValueError(f'Value {value} is outside the array range [{arr[0]}, {arr[-1]}]')
     else:
         if value > arr[0] or value < arr[-1]:
-            raise ValueError(f"Value {value} is outside the array range [{arr[-1]}, {arr[0]}]")
+            raise ValueError(f'Value {value} is outside the array range [{arr[-1]}, {arr[0]}]')
 
     # Handle edge cases
     if value == arr[0]:
@@ -703,15 +709,15 @@ def combine_features(
             features_arrays.append(np.array([feature]))
         elif isinstance(feature, np.ndarray):
             if feature.ndim > 1:
-                raise ValueError("All array inputs must be 1D arrays")
+                raise ValueError('All array inputs must be 1D arrays')
             features_arrays.append(feature)
         elif isinstance(feature, list):
             converted = np.array(feature)
             if converted.ndim > 1:
-                raise ValueError("All array inputs must be 1D arrays")
+                raise ValueError('All array inputs must be 1D arrays')
             features_arrays.append(converted)
         else:
-            raise TypeError(f"Inputs must be floats or 1D numpy arrays, got {type(feature)}")
+            raise TypeError(f'Inputs must be floats or 1D numpy arrays, got {type(feature)}')
 
     # Handle grouping parameter
     if groups is None:
@@ -719,12 +725,12 @@ def combine_features(
         feature_groups = list(range(len(features_arrays)))
     elif isinstance(groups, list):
         if len(groups) != len(features_arrays):
-            raise ValueError(f"Length of groups ({len(groups)}) must match number of features ({len(features_arrays)})")
+            raise ValueError(f'Length of groups ({len(groups)}) must match number of features ({len(features_arrays)})')
         feature_groups = groups
     elif isinstance(groups, dict):
         feature_groups = [groups.get(i, i) for i in range(len(features_arrays))]
     else:
-        raise TypeError("groups must be None, a list, or a dictionary")
+        raise TypeError('groups must be None, a list, or a dictionary')
 
     # Organize features by group
     group_to_features = {}
@@ -740,7 +746,7 @@ def combine_features(
         if array_features:
             lengths = [len(arr) for arr in array_features]
             if len(set(lengths)) > 1:
-                raise ValueError(f"Features in group {group_id} must have the same length. Got lengths: {lengths}")
+                raise ValueError(f'Features in group {group_id} must have the same length. Got lengths: {lengths}')
 
     # Get length of each group
     group_lengths = {}
