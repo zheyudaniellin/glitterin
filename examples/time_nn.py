@@ -8,9 +8,8 @@ import glitterin
 # Load Producer
 print('Load Producer')
 
-producer = glitterin.user.ScatteringProducer(fdir='/home/zylin/coding/glitterin')
+producer = glitterin.user.ScatteringProducer(nndir='/home/zylin/coding/glitterin')
 producer.setup(['Cext', 'Cabs', 'Z11', 'Z12', 'N12', 'N22', 'N33', 'N34', 'N44'])
-
 
 def my_function():
     n_sample = 100

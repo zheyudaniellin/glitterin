@@ -14,7 +14,8 @@ import glitterin
 print('Load Producer')
 
 # Generate the ScatteringProducer object
-producer = glitterin.user.ScatteringProducer(nndir='/home/zylin/coding/glitterin/assets/nnmodels')
+nndir = '/central/groups/carnegie_poc/zylin/projects/mie_vs_agl/mleach2/final_nn'
+producer = glitterin.user.ScatteringProducer(nndir=nndir)
 
 # Now we want to decide what qantities we want. 
 producer.setup(['Cext', 'Cabs', 'albedo', 'Z11', 'Z12', 'N12', 'N22', 'N33', 'N34', 'N44'])
@@ -34,7 +35,7 @@ w = 1e-4 # [cm]
 # Call the producer to generate the output
 # the output is a dictionary with quantities defined in the setup
 # xtype allows the user to determine what kind of "radius" we're considering. Either the radius of volume equivalent sphere, radius of projected area equivalent circle, or radius of the enclosing sphere. 
-out = producer(xvol, re_m, im_m, theta, w, xtype='vol')
+out = producer(xvol, re_m, im_m, theta, w, xtype='vol', outtype='dict')
 
 # this is the volume equivalent grain size 
 avol = w / 2 / np.pi * xvol
@@ -53,7 +54,7 @@ min_xvol = glitterin.user.xvol_from_xenc(0.1)
 max_xvol = glitterin.user.max_xvol_from_nk(re_m[0], im_m[0])
 
 print('Plotting')
-fig, axes = plt.subplots(1,3,sharex=True,sharey=False,squeeze=True,figsize=(10,6))
+fig, axes = plt.subplots(1,3,sharex=True,sharey=False,squeeze=True,figsize=(10,5))
 
 ax = axes[0]
 ax.plot(xvol, Qextvol, 'k-')
