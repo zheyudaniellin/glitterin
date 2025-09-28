@@ -10,10 +10,11 @@ If you use this package, please cite Lin et al., in prep. and Yurkin M.A. & Hoek
 
 
 ## Installation
-```bash
+The easiest way is to do git clone.
 
-The easiest way is to do git clone. 
+```bash
 git clone https://github.com/zheyudaniellin/glitterin.git
+```
 
 ## Download the neural network models
 
