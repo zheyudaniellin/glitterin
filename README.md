@@ -2,27 +2,20 @@
 
 A python package interface to using neural networks trained on scattering of irregular grains.
 
-toolkit.py
-- reading json files
-- combine_features. so I can use this without having to load pytorch
+This package was created by 
 
-data.py
-- read the visualization data (export_x.py) and also the xnk training data (export_xnk.py stuff)
+# Credit
 
-dust.py
-- the dust objects
-
-network.py
-- neural network stuff
-- wmse
-
-user.py
-- all convenient functions
-- xsize to xvol conversion 
-- size averaging 
-- producers
+If you use this package, please cite Lin et al., in prep. and Yurkin M.A. & Hoekstra A.G, "The discrete-dipole-approximation code ADDA: capabilities and known limitations," JQSRT, 112, 2234–2247 (2011). 
 
 
 ## Installation
 ```bash
-pip install glitterin
+
+The easiest way is to do git clone. 
+git clone https://github.com/zheyudaniellin/glitterin.git
+
+## Download the neural network models
+
+The code here is only the python interface. The actual neural network should be downloaded at: https://doi.org/10.7910/DVN/STER2G
+
