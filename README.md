@@ -6,7 +6,7 @@ A Python package for fast and accurate light scattering calculations from irregu
 
 **glitterin** provides a computationally efficient alternative to traditional scattering models for irregularly shaped dust particles. While light scattering by dust is often modeled assuming spherical grains (using Lorenz-Mie theory) for numerical simplicity, real dust particles have highly irregular morphologies that significantly affect their scattering properties. 
 
-This package uses neural networks trained on Discrete Dipole Approximation (DDA) calculations to predict scattering properties of irregular grains in milliseconds, compared to hours or days for full DDA computations. Quantities include the extinction cross-section, absorption cross-section, and elements of the scattering matrix (specifically the non-zero elements for randomly oriented grains: $Z_{11}$, $Z_{12$}, $Z_{22}$, $Z_{33}$, $Z_{34}$, $Z_{44}$). 
+This package uses neural networks trained on Discrete Dipole Approximation (DDA) calculations to predict scattering properties of irregular grains in milliseconds, compared to hours or days for full DDA computations. Quantities include the extinction cross-section, absorption cross-section, and elements of the scattering matrix (specifically the non-zero elements for randomly oriented grains: $Z_{11}$, $Z_{12}$, $Z_{22}$, $Z_{33}$, $Z_{34}$, $Z_{44}$). 
 The grain morphology is based on the agglomerated debris particle formulation (e.g., Zubko et al. 2009 JQSRT, 110, 1741). 
 **glitterin** enables incorporation of realistic grain morphologies in dust inference and radiative transfer simulations for debris disks, protoplanetary disks, and other astronomical environments without the prohibitive computational costs.
 
