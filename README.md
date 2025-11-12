@@ -6,21 +6,21 @@ A Python package for fast and accurate light scattering calculations from irregu
 
 **glitterin** provides a computationally efficient alternative to traditional scattering models for irregularly shaped dust particles. While light scattering by dust is often modeled assuming spherical grains (using Lorenz-Mie theory) for numerical simplicity, real dust particles have highly irregular morphologies that significantly affect their scattering properties. 
 
-This package uses neural networks trained on Discrete Dipole Approximation (DDA) calculations to predict scattering properties of irregular grains in milliseconds, compared to hours or days for full DDA computations. Quantities include the extinction cross-section, absorption cross-section, and elements of the scattering matrix (specifically the non-zero elements for randomly oriented grains: $Z_{11}$, $Z_{12}$, $Z_{22}$, $Z_{33}$, $Z_{34}$, $Z_{44}$). 
+This package uses neural networks trained on Discrete Dipole Approximation (DDA) calculations of irregular grains to predict the scattering properties in much shorter timescales than the full computation. Quantities include the extinction cross-section, absorption cross-section, and elements of the scattering matrix (specifically the non-zero elements for randomly oriented grains: $Z_{11}$, $Z_{12}$, $Z_{22}$, $Z_{33}$, $Z_{34}$, $Z_{44}$). 
 The grain morphology is based on the agglomerated debris particle formulation (e.g., Zubko et al. 2009 JQSRT, 110, 1741). 
 **glitterin** enables incorporation of realistic grain morphologies in dust inference and radiative transfer simulations for debris disks, protoplanetary disks, and other astronomical environments without the prohibitive computational costs.
 
-The scattering matrix elements have been validated against laboratory measurements of forsterite and hematite, demonstrating superior accuracy compared to spherical grain models in capturing both qualitative and quantitative scattering behaviors.
+The scattering matrix elements have been validated against laboratory measurements of forsterite and hematite, demonstrating much better representation of real grains than spherical grain models. 
 
 ### Key Applications
 - Modeling of mid-IR solid-state features
 - Millimeter-wavelength polarization predictions for protoplanetary disks
 - Radiative transfer simulations requiring realistic dust scattering
 
-## Credit
+## Acknowledgements
 
 If you use this package, please cite the following: 
-- Lin et al.,in prep. "glitterin: Towards Replacing the Role of Lorenz-Mie Theory in Astronomy Using Neural Networks Trained on Light Scattering of Irregularly Shaped Grains"
+- Lin et al.,in press. "glitterin: Towards Replacing the Role of Lorenz-Mie Theory in Astronomy Using Neural Networks Trained on Light Scattering of Irregularly Shaped Grains"
 - Yurkin M.A. & Hoekstra A.G, "The discrete-dipole-approximation code ADDA: capabilities and known limitations," JQSRT, 112, 2234–2247 (2011). 
 
 ## Requirements
@@ -31,9 +31,17 @@ If you use this package, please cite the following:
 - scikit-learn >= 1.6.1
 - h5py >= 3.13.0
 
-## Installation
-The easiest way is to do git clone.
+Also, matplotlib will be useful for visualization, but not strictly required for using glitterin. 
 
+## Installation
+
+The easiest way is to use pip install 
+
+```bash
+pip install glitterin
+```
+
+Alternatively, you can clone it from github
 ```bash
 git clone https://github.com/zheyudaniellin/glitterin.git
 ```
@@ -49,6 +57,7 @@ Once downloaded, untar the file. There is no requirement where the untarred file
 Below is the minimal working example. For a more complete example, see the 'examples' folder. 
 
 ```bash
+import numpy as np
 import glitterin
 
 # Create the scattering wrapper

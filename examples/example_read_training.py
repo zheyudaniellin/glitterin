@@ -1,5 +1,6 @@
 """
-Example script to read the training data. 
+Example script to read the training data which can be downloaded at:
+https://doi.org/10.7910/DVN/QZE3D7
 
 See example_read_visualization.py on how to recover Cext, Cabs, etc
 
@@ -12,7 +13,7 @@ sys.path.append('..')
 import glitterin
 
 # Read a visualization data
-dir_1 = '/central/groups/carnegie_poc/zylin/projects/mie_vs_agl/adda_aggl/training_5/export'
+dir_1 = 'path/to/export'
 out = glitterin.data.read_dataset(dir_1, quant='all', load_uncertainty=True)
 
 # input properties of the dust

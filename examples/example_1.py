@@ -2,7 +2,6 @@
 This is an example script on how to calculate quantities from glitterin
 
 """
-import pdb
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -14,7 +13,7 @@ import glitterin
 print('Load Producer')
 
 # Generate the ScatteringProducer object
-nndir = '/central/groups/carnegie_poc/zylin/projects/mie_vs_agl/mleach2/final_nn'
+nndir = 'path/to/nnmodels'
 producer = glitterin.user.ScatteringProducer(nndir=nndir)
 
 # Now we want to decide what qantities we want. 

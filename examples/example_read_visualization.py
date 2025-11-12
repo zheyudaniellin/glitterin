@@ -1,5 +1,6 @@
 """
-example script to read the visualization data 
+example script to read the visualization data which can be downloaded at:
+https://doi.org/10.7910/DVN/CWLYZL
 
 Note that for these data, the cross-sections are normalized by pi aenc^2 as a default
 """
@@ -11,7 +12,7 @@ sys.path.append('..')
 import glitterin
 
 # Read a visualization data
-dir_1 = '/central/groups/carnegie_poc/zylin/projects/mie_vs_agl/adda_aggl/Evaluation_Set_fcd/ES_n2.5_k1.00/export'
+dir_1 = 'path/to/export'
 out = glitterin.data.read_dataset(dir_1, quant='all', load_uncertainty=True)
 
 # input properties of the dust

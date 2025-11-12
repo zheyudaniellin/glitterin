@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "glitterin"
-version = "0.1.0"
+version = "1.0.0"
 authors = [
-    {name = "Zhe-Yu Daniel Lin", email = "zlin@carnegiescience.edu"},
+    {name = "Zhe-Yu Daniel Lin", email = "dlin@nrao.edu"},
 ]
-description = "User interface to using pytorch neural network trained on scattering of irregular grains."
+description = "User interface for using pytorch neural network trained on scattering of irregular grains through ADDA."
 readme = "README.md"
 requires-python = ">=3.10"
 license = {file = "LICENSE"}

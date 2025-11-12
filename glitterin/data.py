@@ -5,7 +5,6 @@ The training data is produced from export_xnk.py, while the visualization is fro
 I need to separate these two cases.
 
 """
-import pdb
 import os
 import numpy as np
 from . import toolkit, dust
