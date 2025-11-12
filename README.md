@@ -25,7 +25,7 @@ If you use this package, please cite the following:
 
 ## Requirements
 
-- Python >= 3.12
+- Python >= 3.10
 - numpy >= 2.2.4
 - pytorch >= 2.6.0
 - scikit-learn >= 1.6.1
@@ -42,7 +42,7 @@ git clone https://github.com/zheyudaniellin/glitterin.git
 
 The code here is only the python interface. The actual neural network should be downloaded at: https://doi.org/10.7910/DVN/STER2G
 
-Once downloaded, untar the file. There is no requirement where the file should be located, but the path to the file is necessary in the python script. 
+Once downloaded, untar the file. There is no requirement where the untarred file should be located, but the path to the file is necessary in the python script. 
 
 ## Quickstart
 
