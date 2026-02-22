@@ -20,7 +20,7 @@ The scattering matrix elements have been validated against laboratory measuremen
 ## Acknowledgements
 
 If you use this package, please cite the following: 
-- Lin et al.,in press. "glitterin: Towards Replacing the Role of Lorenz-Mie Theory in Astronomy Using Neural Networks Trained on Light Scattering of Irregularly Shaped Grains"
+- Lin et al. 2025, "glitterin: Towards Replacing the Role of Lorenz-Mie Theory in Astronomy Using Neural Networks Trained on Light Scattering of Irregularly Shaped Grains", PASP, 137, 124502.
 - Yurkin M.A. & Hoekstra A.G, "The discrete-dipole-approximation code ADDA: capabilities and known limitations," JQSRT, 112, 2234–2247 (2011). 
 
 ## Requirements
